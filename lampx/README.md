@@ -12,8 +12,8 @@ The example contains:
 Getting started: 
  - Checkout 
  - Start VM: 
-   $ cd /path/to/this/dir
-   $ vagrant up
+   - cd /path/to/this/dir
+   - vagrant up
  - Open Browser in your host: http://localhost:8080
 
 Customization
@@ -21,6 +21,6 @@ Customization
  - Add your application source in source folder 
  - Customize apache config (THISDIR/config/files/apache/)
  - Destroy and start VM
-   $ cd /path/to/this/dir
-   $ vagrant destroy
-   $ vagrant up
+   - cd /path/to/this/dir
+   - vagrant destroy
+   - vagrant up
