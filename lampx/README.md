@@ -5,7 +5,7 @@ Vagrant example for a simple LAMP-Stack (http://en.wikipedia.org/wiki/LAMP_%28so
 
 The example contains:
  - Ubuntu 14.04 Server
- - PHP (suphp)
+ - PHP
  - Java, Tomcat, mod_jk
  - Python, mod_wsgi
 

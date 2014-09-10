@@ -13,55 +13,54 @@ echo ""
 echo "===== $SCRIPTNAME ====="
 echo ""
 
+## PACKAGES
+
+DEPENDENCIES_BASE="curl zip bzip2 vim lynx ntp git subversion git-svn"
+DEPENDENCIES_APACHE="apache2"
+DEPENDENCIES_PHP="php5 php5-mysql php5-curl php5-gd php5-mcrypt"
+DEPENDENCIES_PYTHON="python python-matplotlib python-pygraphviz python-pip python-virtualenv libapache2-mod-wsgi"
+DEPENDENCIES_JAVA="openjdk-6-jdk"
+DEPENDENCIES_TOMCAT="tomcat7-user libapache2-mod-jk"
+DEPENDENCIES_MYSQL="mysql-server phpmyadmin"
+
+
+## configuration for mysql
+echo mysql-server mysql-server/root_password select "vagrant" | debconf-set-selections
+echo mysql-server mysql-server/root_password_again select "vagrant" | debconf-set-selections
+
+## configuration for phpmyadmin
+echo 'phpmyadmin phpmyadmin/dbconfig-install boolean false' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/app-password-confirm password vagrant' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/mysql/admin-pass password vagrant' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/password-confirm password vagrant' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/setup-password password vagrant' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/database-type select mysql' | debconf-set-selections
+echo 'phpmyadmin phpmyadmin/mysql/app-pass password vagrant' | debconf-set-selections
+echo 'dbconfig-common dbconfig-common/mysql/app-pass password vagrant' | debconf-set-selections
+echo 'dbconfig-common dbconfig-common/mysql/app-pass password' | debconf-set-selections
+echo 'dbconfig-common dbconfig-common/password-confirm password vagrant' | debconf-set-selections
+echo 'dbconfig-common dbconfig-common/app-password-confirm password vagrant' | debconf-set-selections
+echo 'dbconfig-common dbconfig-common/app-password-confirm password vagrant' | debconf-set-selections
+echo 'dbconfig-common dbconfig-common/password-confirm password vagrant' | debconf-set-selections
+
 echo "update.."
 sudo apt-get update
 
 echo "install dependencies..."
-echo mysql-server mysql-server/root_password select "vagrant" | debconf-set-selections
-echo mysql-server mysql-server/root_password_again select "vagrant" | debconf-set-selections
-sudo apt-get install -y ntp lynx finger zip bzip2 vim curl apache2 mysql-server git subversion git-svn libapache2-mod-php5 php5 php5-mysql php5-curl php5-gd php5-mcrypt libapache2-mod-wsgi python-pip python-virtualenv openjdk-6-jdk tomcat7-user libapache2-mod-jk libapache2-mod-suphp
+apt-get install -y $DEPENDENCIES_BASE $DEPENDENCIES_APACHE $DEPENDENCIES_PHP $DEPENDENCIES_PYTHON $DEPENDENCIES_JAVA $DEPENDENCIES_TOMCAT $DEPENDENCIES_MYSQL
 
-cp /home/vagrant/files/suphp.conf /etc/suphp/suphp.conf
+echo "various settings..."
+usermod -a -G adm vagrant
 
-a2dismod php5
+echo "activate apache modules..."
+a2enmod proxy
+a2enmod proxy_http
 a2enmod rewrite
 a2enmod headers
 a2enmod wsgi
 a2enmod jk
 
+echo "restart apache..."
 service apache2 restart
-
-echo "set rights for suphp.."
-chown vagrant:www-data /home/vagrant
-chmod 710 /home/vagrant
-
-echo "create logs dir .."
-mkdir -p /home/vagrant/logs
-chown -R vagrant:vagrant /home/vagrant/
-
-
-NODE_VERSION="0.10.31"
-
-echo "download precompiled node.."
-MACHINE_TYPE=`uname -m`
-ARCHSTR="x86"
-if [ "${MACHINE_TYPE}" = "x86_64" ]; then
-	ARCHSTR="x64"
-fi
-cd /tmp
-wget http://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${ARCHSTR}.tar.gz -O node.tar.gz
-tar xfz node.tar.gz
-mkdir -p /opt/node
-PATHTONODE=/opt/node/node-v${NODE_VERSION}
-mv node-v${NODE_VERSION}-linux-${ARCHSTR} $PATHTONODE
-ln -s $PATHTONODE/bin/node /usr/local/bin/node
-ln -s $PATHTONODE/bin/node /usr/bin/node 
-ln -s $PATHTONODE/bin/npm /usr/local/bin/npm 
-ln -s $PATHTONODE/bin/npm /usr/bin/npm 
-
-echo "various settings..."
-usermod -a -G adm vagrant
-
-echo "cleanup.."
-rm -rf /home/vagrant/files
 
