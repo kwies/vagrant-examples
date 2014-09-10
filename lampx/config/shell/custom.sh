@@ -23,13 +23,13 @@ echo "add here your install commands.."
 
 ## use this for php applications
 ### add apache config
-#cp /vagrant/config/files/apache/myphpapp.conf /etc/apache2/sites-available/myapp.conf
+cp /vagrant/config/files/apache/myphpapp.conf /etc/apache2/sites-available/myapp.conf
 ### activate apache conf
-#a2ensite myapp.conf
+a2ensite myapp.conf
 ### copy application files 
-#cp -R /vagrant_data/example/php /home/vagrant/public_html
+cp -R /vagrant_data/example/php /home/vagrant/public_html
 ### set rights
-#chown -R vagrant:vagrant /home/vagrant/public_html
+chown -R vagrant:vagrant /home/vagrant/public_html
 
 ## use this for tomcat applications
 ### add apache config
